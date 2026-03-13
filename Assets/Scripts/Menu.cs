@@ -1,3 +1,4 @@
+using KBCore.Refs;
 using MySystems.Persistence;
 using System.Linq;
 using UnityEngine;
@@ -12,16 +13,18 @@ public class Menu : MonoBehaviour
     
     private void Awake()
     {
-        newGameBtn.onClick.AddListener(() => SceneManager.LoadScene("SampleScene"));
-        if (SaveLoadSystem.Instance.ListAllSaves().Count() <= 0)
+        newGameBtn.onClick.AddListener(() => SceneManager.LoadScene("SampleScene")); 
+        saveGameBtn.onClick.AddListener(() =>
         {
-            Debug.Log("No games are listed");
-            saveGameBtn.interactable = false;
-            loadGameBtn.interactable = false;
-            return;
-        }
-        
-        saveGameBtn.onClick.AddListener(() => SaveLoadSystem.Instance.SaveGame());
+            SaveLoadSystem.Instance.gameData.Name = SceneManager.GetActiveScene().name;
+            SaveLoadSystem.Instance.SaveGame();
+        });
         loadGameBtn.onClick.AddListener(() => SaveLoadSystem.Instance.LoadGame(SaveLoadSystem.Instance.gameData.Name));
+        //if (SaveLoadSystem.Instance.ListAllSaves().Count() <= 0)
+        //{
+        //    Debug.Log("No games are listed");
+        //    saveGameBtn.interactable = true;
+        //    loadGameBtn.interactable = false;
+        //}
     }
 }
