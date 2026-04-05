@@ -9,7 +9,9 @@ public class PlayerInput : MonoBehaviour
     private InputAction move;
     private InputAction look;
     private InputAction jump;
-    [SerializeField] private float maxSpeed = 10.0f;
+    [SerializeField] private int maxHealth;
+    [SerializeField] private int health;
+    [SerializeField] private float maxSpeed = 10.0f; // This will be controlled by GameData later on
     [SerializeField] private float gravity = -30.0f;
     private Vector3 velocity;
     [SerializeField] private float rotationSpeed = 4.0f;
@@ -33,10 +35,28 @@ public class PlayerInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 #endif
+        maxSpeed = SaveLoadSystem.Instance.gameData.runningSpeed;
+        maxHealth = SaveLoadSystem.Instance.gameData.maxHealth;
+        health = SaveLoadSystem.Instance.gameData.health;
+        if (health <= 0)
+        {
+            health = maxHealth;
+        }
+        controller.enabled = false;
+        if (!SaveLoadSystem.Instance.gameData.isDefaultPosition)
+        {
+            transform.position = new Vector3(
+                SaveLoadSystem.Instance.gameData.posX,
+                SaveLoadSystem.Instance.gameData.posY,
+                SaveLoadSystem.Instance.gameData.posZ);
+        }
+        controller.enabled = true;
+        Menu.Instance.getPlayerData += SharePlayerData;
     }
     private void OnDisable()
     {
         jump.started -= Jump;
+        Menu.Instance.getPlayerData -= SharePlayerData;
     }
 
     private void Jump(InputAction.CallbackContext context)
@@ -73,4 +93,15 @@ public class PlayerInput : MonoBehaviour
 		mouseSensY = value;
 		rotationSpeed = value;
 	}
+
+    private void SharePlayerData()
+    {
+        health -= 5;
+        Vector3 currPos = transform.position;
+        SaveLoadSystem.Instance.gameData.health = health;
+        SaveLoadSystem.Instance.gameData.posX = currPos.x;
+        SaveLoadSystem.Instance.gameData.posY = currPos.y;
+        SaveLoadSystem.Instance.gameData.posZ = currPos.z;
+        SaveLoadSystem.Instance.gameData.isDefaultPosition = false;
+    }
 }
