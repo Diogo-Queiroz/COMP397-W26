@@ -8,5 +8,6 @@ public class EventChannelManager : PersistentSingleton<EventChannelManager>
 {
     public VoidEventChannel voidEvent;
     public FloatEventChannel floatEvent;
+    public FloatEventChannel newFloatEvent;
     public GameDataEventChannel gameDataEvent;
 }
